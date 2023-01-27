@@ -19,10 +19,20 @@ description = ""
 authors = ["resoliwan <resoliwan@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+PyMySQL = "^1.0.2"
+PyYAML = "^6.0"
+SQLAlchemy = "^1.4.36"
+arrow = "^1.2.2"
 fastapi = "^0.76.0"
-uvicorn = "^0.17.6"
+mysql-connector = "^2.2.9"
+psycopg2-binary = "^2.9.3"
 pytest = "^7.1.2"
+pytest-icdiff = "^0.5"
+python = "^3.10"
+requests = "^2.27.1"
+tenacity = "^8.0.1"
+uvicorn = "^0.17.6"
+py = "^1.11.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.950"

@@ -6,6 +6,10 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ft/ticker:latest
+    depends_on:
+      - mysql
+    links:
+      - mysql
     volumes:
       - ./ticker:/ticker
       - ./tests:/tests
@@ -19,3 +23,16 @@ services:
       - --reload
     ports:
       - "80:80"
+
+  mysql:
+    image: mysql:8.0.31-debian
+    # XXX for mac m1
+    # platform: linux/x86_64
+    environment:
+      - MYSQL_ROOT_PASSWORD=abc123
+      - MYSQL_DATABASE=ticker
+    ports:
+      - "33061:3306"
+    # XXX 한글 저장 시 인코딩 설정
+    command:
+      - --character-set-server=utf8mb4      - --collation-server=utf8mb4_unicode_ci

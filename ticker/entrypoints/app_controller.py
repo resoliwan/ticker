@@ -6,7 +6,16 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.get("/ticker/version/v1")
+@app.get("/tk/version/v1")
 def get_version():
-    # version
     return {"success": True, "version": "0.0.0"}
+
+
+@app.get("/tk/ticker/v1")
+def get_ticker(symbol, interval, range):
+    return True
+
+
+@app.post("/tk/ticker/v1")
+def save_ticker(symbol, interval, range):
+    return True
