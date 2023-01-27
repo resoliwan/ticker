@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ft/ticker:latest
+    volumes:
+      - ./ticker:/ticker
+      - ./tests:/tests
+    entrypoint:
+      - poetry
+      - run
+      - uvicorn
+      - ticker.entrypoints.app_controller:app
+      - --host=0.0.0.0
+      - --port=80
+      - --reload
+    ports:
+      - "80:80"

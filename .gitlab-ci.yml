@@ -1,0 +1,138 @@
+stages:
+  - test
+  - build
+  - deploy
+
+.docker_dind_variables:
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+
+.build_and_deploy_variables:
+  variables:
+    AWS_REGION: ap-northeast-2
+    REPOSITORY_URL: 274236163287.dkr.ecr.ap-northeast-2.amazonaws.com/ticker
+    IMAGE_TAG: "$CI_COMMIT_TAG"
+    ARGOCD_APP: ticker
+
+.config_staging:
+  variables:
+    STAGE: staging
+
+.config_production:
+  variables:
+    STAGE: production
+
+.test_template:
+  extends:
+    - .docker_dind_variables
+  stage: test
+  image: docker/compose:latest
+  services:
+    - docker:stable-dind
+  before_script:
+    - until docker info; do sleep 1; done
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
+
+.build_template:
+  extends:
+    - .docker_dind_variables
+    - .build_and_deploy_variables
+  stage: build
+  image: docker/compose:latest
+  services:
+    - docker:stable-dind
+  rules:
+    - if: $CI_COMMIT_TAG
+  before_script:
+    - until docker info; do sleep 1; done
+    - apk add --no-cache curl jq gcc alpine-sdk python3-dev python3 py3-pip
+    - pip3 install awscli
+    - $(aws ecr get-login --no-include-email --region "${AWS_REGION}")
+  script:
+    - docker pull ${REPOSITORY_URL}:${STAGE} || true
+    - docker build --cache-from ${REPOSITORY_URL}:${STAGE} -t ${REPOSITORY_URL}:latest .
+    - docker tag ${REPOSITORY_URL}:latest ${REPOSITORY_URL}:${IMAGE_TAG}
+    - docker tag ${REPOSITORY_URL}:latest ${REPOSITORY_URL}:${STAGE}
+    - docker push ${REPOSITORY_URL}:latest
+    - docker push ${REPOSITORY_URL}:${IMAGE_TAG}
+    - docker push ${REPOSITORY_URL}:${STAGE}
+
+.deploy_template:
+  extends:
+    - .build_and_deploy_variables
+  stage: deploy
+  image: alpine:latest
+  rules:
+    - if: $CI_COMMIT_TAG
+  before_script:
+    - apk add --update curl
+    - curl -sSL -o argocd https://${ARGOCD_SERVER}/download/argocd-linux-amd64
+    - chmod +x argocd
+  script:
+    - ./argocd app wait ${ARGOCD_APP}-${STAGE} --health --grpc-web
+    - ./argocd app set ${ARGOCD_APP}-${STAGE} -p ticker.image.tag=${IMAGE_TAG} --grpc-web
+    - ./argocd app sync ${ARGOCD_APP}-${STAGE} --grpc-web
+    - ./argocd app wait ${ARGOCD_APP}-${STAGE} --sync --grpc-web
+
+format-black:
+  stage: test
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
+  image:
+    name: cytopia/black
+    entrypoint: ["/bin/ash", "-c"]
+  script:
+    - python3 -m black --check --diff ticker
+
+format-pylint:
+  stage: test
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
+  image:
+    name: cytopia/pylint
+    entrypoint: ["/bin/ash", "-c"]
+  script:
+    - python3 -m pylint --rcfile pyproject.toml ticker
+
+unit-test:
+  extends:
+    - .test_template
+  script:
+    - docker-compose build
+    - docker-compose up -d
+    - docker-compose run --rm --entrypoint='poetry run pytest tests/unit' api
+
+integration-test:
+  extends:
+    - .test_template
+  script:
+    - docker-compose build
+    - docker-compose up -d
+    - docker-compose run --rm --entrypoint='poetry run pytest tests/integration' api
+
+e2e-test:
+  extends:
+    - .test_template
+  script:
+    - docker-compose build
+    - docker-compose up -d
+    - docker-compose run --rm --entrypoint='poetry run pytest tests/e2e' api
+
+build staging:
+  extends:
+    - .config_staging
+    - .build_template
+
+build production:
+  extends:
+    - .config_production
+    - .build_template
+
+deploy staging:
+  extends:
+    - .config_staging
+    - .deploy_template
