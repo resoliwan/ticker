@@ -38,3 +38,7 @@ def get_api_url():
     host = os.environ.get("API_HOST", "localhost")
     port = os.environ.get("API_PORT", 80)
     return f"http://{host}:{port}"
+
+
+def get_yahoo_api_url():
+    return "https://query1.finance.yahoo.com/v8/finance/chart"
