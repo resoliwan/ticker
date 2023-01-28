@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
+import pandas as pd
+
 # from typing import Dict
 
 # import arrow
@@ -19,3 +21,17 @@ class DailyPrice:
     open: Decimal
     close: Decimal
     volume: Decimal
+
+    @staticmethod
+    def create_from_price(price: pd.Series) -> DailyPrice:
+        return DailyPrice(
+            **{
+                "as_of_date": price["Date"],
+                "symbol": price["Symbol"],
+                "high": price["High"],
+                "low": price["Low"],
+                "open": price["Open"],
+                "close": price["Close"],
+                "volume": price["Volume"],
+            }
+        )

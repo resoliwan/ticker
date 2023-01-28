@@ -91,10 +91,12 @@ class MockVendorProxy(AbstractVendorProxy):
     def get_daily_prices(
         self, symbol: str, interval: int, a_range: int
     ) -> pd.DataFrame:
+        now = arrow.utcnow()
+        dates = [now.shift(days=-1 * i).datetime for i in range(a_range)]
         return pd.DataFrame(
             data={
                 "Symbol": symbol,
-                "Date": [arrow.utcnow().datetime] * a_range,
+                "Date": dates,
                 "Open": [1] * a_range,
                 "High": [1] * a_range,
                 "Low": [1] * a_range,

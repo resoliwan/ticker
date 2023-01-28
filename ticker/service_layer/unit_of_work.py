@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class AbstractUnitOfWork(abc.ABC):
     events: List[events.Event]
-    ticker: price_repo.AbstractPriceRepository
+    price: price_repo.AbstractPriceRepository
 
     def __enter__(self) -> AbstractUnitOfWork:
         return self
@@ -63,7 +63,7 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         return self.session_registry()
 
     def __enter__(self):
-        self.price = price_repo.SqlAlchemyPriceRepository
+        self.price = price_repo.SqlAlchemyPriceRepository(self.session)
         return super().__enter__()
 
     def __exit__(self, *args):
