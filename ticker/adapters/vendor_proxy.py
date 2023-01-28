@@ -85,3 +85,20 @@ class YFianceProxy(AbstractVendorProxy):
         df = df.reset_index()
         df["Symbol"] = symbol
         return df
+
+
+class MockVendorProxy(AbstractVendorProxy):
+    def get_daily_prices(
+        self, symbol: str, interval: int, a_range: int
+    ) -> pd.DataFrame:
+        return pd.DataFrame(
+            data={
+                "Symbol": symbol,
+                "Date": [arrow.utcnow().datetime] * a_range,
+                "Open": [1] * a_range,
+                "High": [1] * a_range,
+                "Low": [1] * a_range,
+                "Close": [1] * a_range,
+                "Volume": [1] * a_range,
+            }
+        )

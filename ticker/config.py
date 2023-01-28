@@ -2,6 +2,8 @@ import logging
 import os
 from urllib.parse import quote
 
+from setuptools import distutils
+
 logger = logging.getLogger(__name__)
 
 
@@ -42,3 +44,8 @@ def get_api_url():
 
 def get_yahoo_api_url():
     return "https://query1.finance.yahoo.com/v8/finance/chart"
+
+
+def use_mock_vendor_proxy():
+    val = os.environ.get("USE_MOCK_VENDOR_PROXY", "False")
+    return bool(distutils.util.strtobool("" + val))

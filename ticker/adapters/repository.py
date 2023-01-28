@@ -3,7 +3,7 @@ import abc
 from ticker.domain import model
 
 
-class AbstractTickerRepository(abc.ABC):
+class AbstractPriceRepository(abc.ABC):
     def __init__(self):
         pass
 
@@ -19,7 +19,7 @@ class AbstractTickerRepository(abc.ABC):
         raise NotImplementedError
 
 
-class SqlAlchemyTickerRepository(AbstractTickerRepository):
+class SqlAlchemyPriceRepository(AbstractPriceRepository):
     def __init__(self, session):
         super().__init__()
         self.session = session

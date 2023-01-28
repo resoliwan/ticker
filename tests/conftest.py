@@ -11,10 +11,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import clear_mappers, scoped_session, sessionmaker
 from tenacity import retry, stop_after_delay
 from ticker import bootstrap, config
-
-# from ticker.adapters import notifications
-# from ticker.adapters.msa_proxy import MockMsaProxy
 from ticker.adapters.orm import metadata, start_mappers
+from ticker.adapters.vendor_proxy import MockVendorProxy
 from ticker.service_layer import unit_of_work
 
 pytest.register_assert_rewrite("tests.e2e.api_client")
@@ -33,17 +31,15 @@ def sqlite_session_factory(in_memory_sqlite_db):
     yield scoped_session(sessionmaker(bind=in_memory_sqlite_db))
 
 
-# @pytest.fixture
-# def bootstrap_test_app(sqlite_session_factory):
-#     bus, dep = bootstrap.bootstrap(
-#         start_orm=False,
-#         uow=unit_of_work.SqlAlchemyUnitOfWork(sqlite_session_factory),
-#         notifications=FakeNotifications(),
-#         publish=lambda *args: None,
-#         msa_proxy=MockMsaProxy(),
-#     )
-#     yield (bus, dep)
-#     clear_mappers()
+@pytest.fixture
+def bootstrap_test_app(sqlite_session_factory):
+    bus, dep = bootstrap.bootstrap(
+        start_orm=False,
+        uow=unit_of_work.SqlAlchemyUnitOfWork(sqlite_session_factory),
+        vendor_proxy=MockVendorProxy(),
+    )
+    yield (bus, dep)
+    clear_mappers()
 
 
 @pytest.fixture

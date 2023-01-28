@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import arrow
 import pytest
-import ticker.adapters.repository as ticker_repo
+import ticker.adapters.repository as price_repo
 from ticker.domain import model
 
 pytestmark = pytest.mark.usefixtures("mappers")
@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("mappers")
 
 def test_crud_portfolio_product(sqlite_session_factory):
     session = sqlite_session_factory()
-    repo = ticker_repo.SqlAlchemyTickerRepository(session)
+    repo = price_repo.SqlAlchemyPriceRepository(session)
 
     as_of_date = arrow.utcnow().datetime
     as_of_date = as_of_date.replace(tzinfo=None)
