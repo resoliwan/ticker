@@ -37,3 +37,12 @@ def test_crud_portfolio_product(sqlite_session_factory):
     repo.add(p2)
     assert repo.get_daily_price(p1.as_of_date, p1.symbol) == p1
     assert repo.get_daily_price(p2.as_of_date, p2.symbol) == p2
+
+
+def test_get_recent_daily_prices(sqlite_session_factory):
+    test_crud_portfolio_product(sqlite_session_factory)
+    session = sqlite_session_factory()
+    repo = price_repo.SqlAlchemyPriceRepository(session)
+
+    res = repo.get_recent_daily_prices("TICKER1", 5)
+    assert res
