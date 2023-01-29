@@ -1,15 +1,18 @@
 version: "3"
 
 services:
-  api:
+  ticker:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ft/ticker:latest
+    image: rw/ticker:latest
     depends_on:
       - mysql
     links:
       - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
     volumes:
       - ./ticker:/ticker
       - ./tests:/tests
@@ -25,14 +28,14 @@ services:
       - "80:80"
 
   mysql:
-    image: mysql:8.0.31-debian
-    # XXX for mac m1
-    # platform: linux/x86_64
+    image: mysql:latest
     environment:
       - MYSQL_ROOT_PASSWORD=abc123
       - MYSQL_DATABASE=ticker
+      - USE_MOCK_VENDOR_PROXY=False
     ports:
       - "33061:3306"
     # XXX 한글 저장 시 인코딩 설정
     command:
-      - --character-set-server=utf8mb4      - --collation-server=utf8mb4_unicode_ci
+       - --character-set-server=utf8mb4
+       - --collation-server=utf8mb4_unicode_ci

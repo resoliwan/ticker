@@ -1,4 +1,5 @@
 import abc
+import datetime
 import logging
 from typing import Dict
 
@@ -10,6 +11,7 @@ from arrow import Arrow
 from ticker import config
 
 yf.pdr_override()
+tz = config.get_local_tz()
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +62,8 @@ class HttpYahooProxy(AbstractVendorProxy):
 
         return pd.DataFrame(
             data={
+                "Date": [datetime.datetime.fromtimestamp(t, tz) for t in timestamp],
                 "Symbol": symbol,
-                "Date": timestamp,
                 "Open": open,
                 "High": high,
                 "Low": low,
@@ -79,8 +81,9 @@ class YFianceProxy(AbstractVendorProxy):
             raise Exception("interval should be 1")
         df = yf.download(
             symbol,
-            start=arrow.utcnow().shift(days=-1 * a_range).datetime,
-            end=arrow.utcnow().datetime,
+            # start=arrow.utcnow().shift(days=-1 * a_range).datetime,
+            # end=arrow.utcnow().datetime,
+            period=f"{a_range}d",
         )
         df = df.reset_index()
         df["Symbol"] = symbol

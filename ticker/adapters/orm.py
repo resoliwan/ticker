@@ -1,7 +1,8 @@
 import logging
 
-from sqlalchemy import Column, DateTime, MetaData, Numeric, String, Table
+from sqlalchemy import Column, DateTime, MetaData, Numeric, String, Table, create_engine
 from sqlalchemy.orm import mapper
+from ticker import config
 from ticker.domain import model
 
 logger = logging.getLogger(__name__)
@@ -23,4 +24,6 @@ daily_price = Table(
 
 def start_mappers():
     logger.info("Starting mappers")
+    engine = create_engine(config.get_mysql_uri(), isolation_level="SERIALIZABLE")
+    metadata.create_all(engine)
     mapper(model.DailyPrice, daily_price)

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, Dict, List, Type
 
+import pymysql
 from ticker.adapters.vendor_proxy import AbstractVendorProxy
 from ticker.domain import commands, events, model
 
@@ -17,10 +18,7 @@ def create_daily_prices(
 ):
     df = vendor_proxy.get_daily_prices(cmd.symbol, cmd.interval, cmd.a_range)
     with uow:
-        print(uow)
         for _, row in df.iterrows():
-            print(row)
-            print(model.DailyPrice.create_from_price(row))
             uow.price.add(item=model.DailyPrice.create_from_price(row))
         uow.commit()
 

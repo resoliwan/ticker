@@ -3,6 +3,9 @@ export DOCKER_BUILDKIT=1
 
 all: build down up format test
 
+dkbuild:
+	docker build -f Dockerfile -t rw/ticker:latest .
+
 build:
 	docker-compose build
 

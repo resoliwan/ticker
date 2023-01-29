@@ -2,6 +2,7 @@ import logging
 import os
 from urllib.parse import quote
 
+import pytz
 from setuptools import distutils
 
 logger = logging.getLogger(__name__)
@@ -49,3 +50,8 @@ def get_yahoo_api_url():
 def use_mock_vendor_proxy():
     val = os.environ.get("USE_MOCK_VENDOR_PROXY", "False")
     return bool(distutils.util.strtobool("" + val))
+
+
+def get_local_tz():
+    tz_str = os.environ.get("TIME_ZONE", "Asia/Seoul")
+    return pytz.timezone(tz_str)
