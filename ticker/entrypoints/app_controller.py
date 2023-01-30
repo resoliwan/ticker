@@ -33,3 +33,12 @@ def get_recent_daily_price(symbol: str, a_range: int):
     if not res:
         return {"success": False}
     return res
+
+
+@app.get("/tk/test/v1")
+def get_test():
+    ticker = "005930.KS"
+    interval = 1
+    a_range = 5
+    create_daily_price(ticker, interval, a_range)
+    return get_recent_daily_price(ticker, a_range)
