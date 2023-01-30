@@ -5,7 +5,7 @@
 - I use this as a template when developing a real server.
 - I use TDD when developing.
 
-# API Spec
+## API Spec
 ![Swagger](img/swagger.png)
 - GET /tk/version/v1
     - Return Version of the server
@@ -44,11 +44,11 @@
     - ticker/tests/unit/test_handlers.py
     - ticker/tests/integration/test_repository.py
 
-# Function
+## Function
 - Save Stock price from yahoo finance and Get data
 - [Yahoo finance data](https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?interval=1d&range=5d)
 
-# Run server
+## Run server
 ```shell
 docker-compose build
 # or, make build
@@ -57,7 +57,7 @@ docker-compose up -d
 # or, make up
 ```
 
-# Swagger
+## Swagger
 ```
 http://localhost:5080/docs
 ```
@@ -100,6 +100,6 @@ make test
 ```
 
 # Reference
-- [Architecture Patterns with Python](https://www.cosmicpython.com/book/preface.html)
 - [Implementing Domain-Driven Design](https://www.amazon.com/Implementing-Domain-Driven-Design-Vaughn-Vernon/dp/0321834577)
-- [cosmic_python](https://www.cosmicpython.com/)
+- [Architecture Patterns with Python](https://www.cosmicpython.com/book/preface.html)
+- [Cosmic Python](https://www.cosmicpython.com/)
