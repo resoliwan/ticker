@@ -17,25 +17,26 @@
     - Create Daily Price and Get Recent Daily Price
 
 ## Applied Design Pattern List
-- Hexagonal or Ports(MVC)
+- Hexagonal or Ports or MVC
     - ticker/entrypoints/app_controller.py
 - Adapters
     - ticker/adapters/vendor_proxy.py
 - Entities
-    - ticker/adapters/orm.py
     - ticker/domain/model.py
 - Repository
+    - ticker/adapters/orm.py
     - ticker/adapters/repository.py
 - Service
     - ticker/service_layer/handlers.py
 - The Message Bus and Events
     - ticker/service_layer/messagebus.py
+    - ticker/domain/events.py
 - Commands and Command Handler
     - ticker/domain/commands.py
-- Command-Query Responsibility Segregation (CQRS)
     - ticker/service_layer/handlers.py
-    - ticker/domain/commands.py
+- Command-Query Responsibility Segregation (CQRS)
     - ticker/views.py
+    - ticker/domain/commands.py
 - Dependency Injection (and Bootstrapping)
     - ticker/bootstrap.py
 - TDD (Test-driven development)
@@ -44,7 +45,7 @@
     - ticker/tests/integration/test_repository.py
 
 # Function
-- Save ticker data from yahoo and Get data
+- Save Stock price from yahoo finance and Get data
 - [Yahoo finance data](https://query1.finance.yahoo.com/v8/finance/chart/005930.KS?interval=1d&range=5d)
 
 # Run server
@@ -82,16 +83,16 @@ poetry install
 ```
 
 ## Running the tests
-- Local
+- Local test
 ```shell
 pytest tests
 
-# or, if you have a local virtualenv
+# or, if you have a local python env
 make unit
 make inte
 make e2e
 ```
-- In docker
+- In docker test for CI/CD
 ```shell
 make up
 make test
