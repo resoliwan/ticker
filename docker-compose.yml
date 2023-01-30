@@ -25,7 +25,7 @@ services:
       - --port=80
       - --reload
     ports:
-      - "80:80"
+      - "5080:80"
 
   mysql:
     image: mysql:latest
@@ -37,5 +37,5 @@ services:
       - "33061:3306"
     # XXX 한글 저장 시 인코딩 설정
     command:
-       - --character-set-server=utf8mb4
-       - --collation-server=utf8mb4_unicode_ci
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci

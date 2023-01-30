@@ -20,3 +20,16 @@ def get_session_hash(uow):
 
     assert a == b
     return uow.session.__hash__()
+
+
+def test_thread_session_safe(bootstrap_test_app):
+    bus, _ = bootstrap_test_app
+    # test uow created from conftest.py.sqlite_session_factory
+    uow = bus.uow
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        res = executor.map(get_session_hash, [uow, uow, uow, uow])
+
+    res = list(res)
+
+    assert res[0] != res[1]
